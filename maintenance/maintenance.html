@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<!--
+  Заглушка технического обслуживания (maintenance stub):
+  одностраничный шаблон для показа во время ТО, деплоя или недоступности сервиса.
+  Правьте тексты, ссылки на почту/поддержку и при необходимости maintenance.png.
+-->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Сайт временно недоступен: проводятся технические работы. Загляните позже или свяжитесь с поддержкой." />
+  <title>Технические работы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-deep: #0a0a12;
+      --bg-mid: #12121f;
+      --accent: #6ee7ff;
+      --accent-2: #a78bfa;
+      --accent-warm: #fbbf77;
+      --text: #f4f4f8;
+      --text-muted: rgba(244, 244, 248, 0.62);
+      --glass: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glow: rgba(110, 231, 255, 0.35);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: "Manrope", system-ui, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Aurora / mesh background */
+    .bg-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: var(--bg-deep);
+      overflow: hidden;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.55;
+      animation: blob-float 18s ease-in-out infinite;
+    }
+
+    .bg-blob:nth-child(1) {
+      width: min(55vw, 420px);
+      height: min(55vw, 420px);
+      background: radial-gradient(circle, #2d1b69 0%, transparent 70%);
+      top: -8%;
+      left: -5%;
+      animation-delay: 0s;
+    }
+
+    .bg-blob:nth-child(2) {
+      width: min(60vw, 480px);
+      height: min(60vw, 480px);
+      background: radial-gradient(circle, #0d4f5c 0%, transparent 70%);
+      bottom: -15%;
+      right: -10%;
+      animation-delay: -6s;
+    }
+
+    .bg-blob:nth-child(3) {
+      width: min(45vw, 360px);
+      height: min(45vw, 360px);
+      background: radial-gradient(circle, #4c1d4a 0%, transparent 70%);
+      top: 40%;
+      left: 35%;
+      opacity: 0.35;
+      animation-delay: -12s;
+    }
+
+    @keyframes blob-float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -3%) scale(1.05); }
+      66% { transform: translate(-3%, 4%) scale(0.95); }
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, black 20%, transparent 75%);
+      pointer-events: none;
+    }
+
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: rise 12s linear infinite;
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 22%; animation-delay: 2s; width: 3px; height: 3px; background: var(--accent-2); }
+    .particle:nth-child(3) { left: 78%; animation-delay: 4s; }
+    .particle:nth-child(4) { left: 88%; animation-delay: 1s; background: var(--accent-warm); }
+    .particle:nth-child(5) { left: 45%; animation-delay: 6s; width: 2px; height: 2px; }
+    .particle:nth-child(6) { left: 62%; animation-delay: 8s; }
+
+    @keyframes rise {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1.25rem, 4vw, 3rem);
+      gap: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    /* Illustration columns */
+    .stage-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.5rem, 3vw, 3rem);
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .art {
+      flex: 0 1 220px;
+      max-width: 240px;
+      display: none;
+      animation: art-float 6s ease-in-out infinite;
+    }
+
+    .art--left { animation-delay: -1s; }
+    .art--right { animation-delay: -3s; }
+
+    @media (min-width: 900px) {
+      .art { display: block; }
+    }
+
+    @keyframes art-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .art svg {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+    }
+
+    /* Card */
+    .card {
+      flex: 1 1 auto;
+      max-width: 520px;
+      width: 100%;
+      padding: clamp(1.75rem, 5vw, 2.75rem);
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 32px 64px rgba(0, 0, 0, 0.45),
+        0 0 80px rgba(110, 231, 255, 0.08);
+      animation: card-in 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    @keyframes card-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "Outfit", sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    h1 {
+      font-size: clamp(1.65rem, 4.5vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(120deg, #fff 0%, rgba(255, 255, 255, 0.85) 40%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 2.2vw, 1.125rem);
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+      max-width: 42ch;
+    }
+
+    .shimmer-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+      margin-bottom: 1.75rem;
+    }
+
+    .shimmer-bar {
+      height: 4px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent), var(--accent-warm));
+      background-size: 200% 100%;
+      animation: shimmer 3s ease infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--glass-border);
+      animation: dot-bounce 1.4s ease-in-out infinite;
+    }
+
+    .dots span:nth-child(1) { animation-delay: 0s; background: var(--accent); }
+    .dots span:nth-child(2) { animation-delay: 0.15s; background: var(--accent-2); }
+    .dots span:nth-child(3) { animation-delay: 0.3s; background: var(--accent-warm); }
+
+    @keyframes dot-bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    .status-text {
+      font-family: "Outfit", sans-serif;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .footer-note {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--glass-border);
+      font-size: 0.8125rem;
+      color: rgba(244, 244, 248, 0.45);
+    }
+
+    .footer-note a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(110, 231, 255, 0.35);
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .footer-note a:hover {
+      color: #fff;
+      border-bottom-color: var(--accent);
+    }
+
+    /* Mobile hero art strip */
+    .mobile-art {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 900px) {
+      .mobile-art { display: none; }
+    }
+
+    .mobile-art svg {
+      width: 88px;
+      height: auto;
+      opacity: 0.95;
+      animation: art-float 5s ease-in-out infinite;
+    }
+
+    .mobile-art svg:last-child {
+      animation-delay: -2s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-blob,
+      .particle,
+      .art,
+      .mobile-art svg,
+      .badge-dot,
+      .shimmer-bar,
+      .dots span {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+      .card {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* Герой: maintenance.png — общая иллюстрация с README */
+    .hero-img {
+      width: min(100%, 640px);
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), 0 0 60px rgba(110, 231, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-stage" aria-hidden="true">
+    <div class="bg-blob"></div>
+    <div class="bg-blob"></div>
+    <div class="bg-blob"></div>
+    <div class="grid-overlay"></div>
+    <div class="noise"></div>
+    <div class="particles">
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <!-- Иллюстрация maintenance.png: та же картинка, что в README репозитория -->
+    <img
+      class="hero-img"
+      src="maintenance.png"
+      width="640"
+      height="200"
+      alt="Техническое обслуживание: иллюстрация"
+      decoding="async"
+    />
+    <div class="mobile-art" aria-hidden="true">
+      <!-- Компактные иконки на мобильных -->
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="28" y="22" width="64" height="76" rx="10" stroke="url(#g1)" stroke-width="2.5"/>
+        <rect x="38" y="34" width="12" height="8" rx="2" fill="#6ee7ff" class="blink"/>
+        <rect x="54" y="34" width="12" height="8" rx="2" fill="#a78bfa" class="blink2"/>
+        <rect x="70" y="34" width="12" height="8" rx="2" fill="#fbbf77" class="blink3"/>
+        <path d="M34 58h52" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M34 72h36" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="g1" x1="28" y1="22" x2="92" y2="98"><stop stop-color="#6ee7ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+        </defs>
+        <style>
+          .blink { animation: b1 1.8s ease-in-out infinite; }
+          .blink2 { animation: b1 1.8s ease-in-out infinite 0.4s; }
+          .blink3 { animation: b1 1.8s ease-in-out infinite 0.8s; }
+          @keyframes b1 { 0%,100%{opacity:.35} 50%{opacity:1} }
+        </style>
+      </svg>
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="58" r="28" stroke="url(#g2)" stroke-width="3" stroke-dasharray="8 6" transform="rotate(-12 60 58)" style="animation: spin 14s linear infinite; transform-origin: 60px 58px;"/>
+        <path d="M44 88 L76 40" stroke="#fbbf77" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="76" cy="40" r="6" fill="#6ee7ff"/>
+        <defs><linearGradient id="g2"><stop stop-color="#6ee7ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        <style>@keyframes spin { to { transform: rotate(-12deg) rotate(360deg); } }</style>
+      </svg>
+    </div>
+
+    <div class="stage-row">
+      <!-- Сервер / дата-центр -->
+      <div class="art art--left" aria-hidden="true">
+        <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="srvGrad" x1="40" y1="20" x2="160" y2="220" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6ee7ff" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#a78bfa" stop-opacity="0.5"/>
+            </linearGradient>
+            <filter id="glowF" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect x="48" y="28" width="104" height="184" rx="14" stroke="url(#srvGrad)" stroke-width="2.2" fill="rgba(10,10,20,0.5)"/>
+          <rect x="62" y="48" width="76" height="22" rx="6" fill="rgba(110,231,255,0.12)" stroke="rgba(110,231,255,0.35)" stroke-width="1"/>
+          <circle cx="74" cy="59" r="4" fill="#6ee7ff" filter="url(#glowF)">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="92" cy="59" r="4" fill="#a78bfa" filter="url(#glowF)">
+            <animate attributeName="opacity" values="1;0.35;1" dur="1.6s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="110" cy="59" r="4" fill="#fbbf77" filter="url(#glowF)">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="62" y="82" width="76" height="22" rx="6" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+          <circle cx="74" cy="93" r="4" fill="#6ee7ff" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.25;0.7" dur="1.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="92" cy="93" r="4" fill="#a78bfa">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="62" y="116" width="76" height="22" rx="6" fill="rgba(251,191,119,0.08)" stroke="rgba(251,191,119,0.25)" stroke-width="1"/>
+          <circle cx="74" cy="127" r="4" fill="#fbbf77">
+            <animate attributeName="opacity" values="1;0.4;1" dur="1.8s" repeatCount="indefinite"/>
+          </circle>
+          <path d="M62 156h76" stroke="rgba(255,255,255,0.12)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M62 170h52" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M62 184h64" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-linecap="round"/>
+          <text x="100" y="215" text-anchor="middle" fill="rgba(244,244,248,0.35)" font-size="11" font-family="Outfit, sans-serif">nodes</text>
+        </svg>
+      </div>
+
+      <article class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Техническое обслуживание
+        </div>
+        <h1>Скоро всё снова заработает как часы</h1>
+        <p class="lead">
+          Просим прощения, но в данный момент проводятся технические работы. Мы обновляем систему, чтобы сайт стал быстрее и удобнее. Загляните чуть позже — мы уже на финишной прямой.
+        </p>
+        <div class="shimmer-wrap">
+          <div class="shimmer-bar" role="progressbar" aria-label="Идёт обновление"></div>
+        </div>
+        <div class="status-row">
+          <div class="dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="status-text">Синхронизация и проверка сервисов…</p>
+        </div>
+        <p class="footer-note">
+          Если срочно — напишите на
+          <a href="mailto:shantsev.a.e@yandex.ru">shantsev.a.e@yandex.ru</a>
+          или в мессенджер поддержки.
+        </p>
+      </article>
+
+      <!-- Робот с ключом -->
+      <div class="art art--right" aria-hidden="true">
+        <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="botGrad" x1="30" y1="0" x2="170" y2="240">
+              <stop stop-color="#a78bfa"/>
+              <stop offset="1" stop-color="#6ee7ff"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="100" cy="210" rx="56" ry="10" fill="rgba(0,0,0,0.35)"/>
+          <g style="animation: botbob 4s ease-in-out infinite; transform-origin: 100px 140px;">
+            <rect x="70" y="72" width="60" height="52" rx="14" fill="rgba(20,20,35,0.85)" stroke="url(#botGrad)" stroke-width="2"/>
+            <rect x="82" y="88" width="36" height="14" rx="4" fill="rgba(110,231,255,0.25)"/>
+            <circle cx="92" cy="95" r="4" fill="#6ee7ff"/>
+            <circle cx="108" cy="95" r="4" fill="#6ee7ff"/>
+            <path d="M94 108c4 3 8 3 12 0" stroke="#fbbf77" stroke-width="2" stroke-linecap="round"/>
+            <rect x="88" y="124" width="24" height="10" rx="3" fill="rgba(167,139,250,0.4)"/>
+            <rect x="88" y="52" width="24" height="28" rx="8" fill="rgba(30,30,50,0.9)" stroke="url(#botGrad)" stroke-width="1.5"/>
+            <path d="M76 96h-18" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+            <path d="M124 96h18" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+            <rect x="78" y="124" width="44" height="40" rx="10" fill="rgba(15,15,28,0.95)" stroke="rgba(110,231,255,0.35)" stroke-width="1.5"/>
+            <circle cx="100" cy="144" r="10" stroke="#6ee7ff" stroke-width="2" fill="none" opacity="0.6">
+              <animateTransform attributeName="transform" type="rotate" from="0 100 144" to="360 100 144" dur="8s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          <g transform="translate(118, 118)">
+            <g class="wrench-swing">
+              <path d="M0 8 L22 -6 L28 2 L10 18 Z" fill="#fbbf77" stroke="rgba(255,200,120,0.5)" stroke-width="1"/>
+              <rect x="-4" y="6" width="8" height="28" rx="2" transform="rotate(-35)" fill="url(#botGrad)" opacity="0.9"/>
+            </g>
+          </g>
+          <style>
+            @keyframes botbob {
+              0%, 100% { transform: translateY(0) rotate(0deg); }
+              50% { transform: translateY(-6px) rotate(2deg); }
+            }
+            .wrench-swing {
+              animation: wrench-rotate 3s ease-in-out infinite;
+              transform-origin: 4px 12px;
+            }
+            @keyframes wrench-rotate {
+              0%, 100% { transform: rotate(-12deg); }
+              50% { transform: rotate(14deg); }
+            }
+          </style>
+        </svg>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
